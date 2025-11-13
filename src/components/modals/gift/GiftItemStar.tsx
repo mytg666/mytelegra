@@ -15,6 +15,7 @@ import { type ObserveFn, useOnIntersect } from '../../../hooks/useIntersectionOb
 import useLang from '../../../hooks/useLang';
 import useLastCallback from '../../../hooks/useLastCallback';
 
+import AnimatedSticker from '../../common/AnimatedSticker';
 import GiftRibbon from '../../common/gift/GiftRibbon';
 import RadialPatternBackground from '../../common/profile/RadialPatternBackground';
 import StickerView from '../../common/StickerView';
@@ -187,15 +188,26 @@ function GiftItemStar({
         style={`width: ${GIFT_STICKER_SIZE}px; height: ${GIFT_STICKER_SIZE}px`}
       >
         {sticker && (
-          <StickerView
-            observeIntersectionForPlaying={observeIntersection}
-            observeIntersectionForLoading={observeIntersection}
-            containerRef={stickerRef}
-            sticker={sticker}
-            size={GIFT_STICKER_SIZE}
-            shouldLoop={isHover}
-            shouldPreloadPreview
-          />
+          // Check if sticker has tgsUrl (for mock gifts like Plush Pepe)
+          (sticker as any).tgsUrl ? (
+            <AnimatedSticker
+              ref={stickerRef}
+              tgsUrl={(sticker as any).tgsUrl}
+              size={GIFT_STICKER_SIZE}
+              play={isHover || true}
+              noLoop={false}
+            />
+          ) : (
+            <StickerView
+              observeIntersectionForPlaying={observeIntersection}
+              observeIntersectionForLoading={observeIntersection}
+              containerRef={stickerRef}
+              sticker={sticker}
+              size={GIFT_STICKER_SIZE}
+              shouldLoop={isHover}
+              shouldPreloadPreview
+            />
+          )
         )}
 
       </div>
@@ -210,7 +222,7 @@ function GiftItemStar({
       >
         {priceCurrency === TON_CURRENCY_CODE
           ? formatTonAsIcon(lang, priceInStarsAsString || 0, { shouldConvertFromNanos: true, className: styles.star })
-          : formatStarsAsIcon(lang, priceInStarsAsString || 0, { asFont: true, className: styles.star })}
+          : formatStarsAsIcon(lang, priceInStarsAsString || 0, { className: styles.star })}
       </Button>
       {giftRibbon}
     </div>
